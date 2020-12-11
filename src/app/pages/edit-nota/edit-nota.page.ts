@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Nota } from 'src/app/model/nota';
+import { AuthService } from 'src/app/services/auth.service';
 import { NotasService } from 'src/app/services/notas.service';
 
 @Component({
@@ -15,10 +16,11 @@ export class EditNotaPage {
 
   public tasks: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private notasS: NotasService, public loadingController: LoadingController, public toastController: ToastController, private modalController: ModalController) {
+  constructor(private authS:AuthService,private formBuilder: FormBuilder, private notasS: NotasService, public loadingController: LoadingController, public toastController: ToastController, private modalController: ModalController) {
     this.tasks = this.formBuilder.group({
       title: ['', Validators.required],
-      description: ['']
+      description: [''],
+      //email:[this.authS.user.email]
     });
   }
 
@@ -31,7 +33,8 @@ export class EditNotaPage {
     await this.presentLoading();
     let data: Nota = {
       titulo: this.tasks.get('title').value,
-      texto: this.tasks.get('description').value
+      texto: this.tasks.get('description').value,
+      email: this.nota.email
     }
     this.notasS.actualizaNota(this.nota.id, data).then((respuesta) => {
       this.loadingController.dismiss();
