@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { Nota } from 'src/app/model/nota';
-import { AuthService } from 'src/app/services/auth.service';
 import { NotasService } from 'src/app/services/notas.service';
+import { UtilitiesService } from 'src/app/services/utilities.service';
 
 @Component({
   selector: 'app-edit-nota',
@@ -16,7 +16,7 @@ export class EditNotaPage {
 
   public tasks: FormGroup;
 
-  constructor(private authS:AuthService,private formBuilder: FormBuilder, private notasS: NotasService, public loadingController: LoadingController, public toastController: ToastController, private modalController: ModalController) {
+  constructor(private utilities:UtilitiesService, private formBuilder: FormBuilder, private notasS: NotasService, private modalController: ModalController) {
     this.tasks = this.formBuilder.group({
       title: ['', Validators.required],
       description: [''],
@@ -27,44 +27,25 @@ export class EditNotaPage {
   ionViewDidEnter(){
     this.tasks.get('title').setValue(this.nota.titulo);
     this.tasks.get('description').setValue(this.nota.texto)
+
   }
 
   public async sendForm() {
-    await this.presentLoading();
+    await this.utilities.presentLoading();
     let data: Nota = {
       titulo: this.tasks.get('title').value,
       texto: this.tasks.get('description').value,
       email: this.nota.email
     }
     this.notasS.actualizaNota(this.nota.id, data).then((respuesta) => {
-      this.loadingController.dismiss();
-      this.presentToast("Nota guardada", "success");
+      this.utilities.loadingController.dismiss();
+      this.utilities.presentToast(this.utilities.traducctionphrase("SAVENOTE"), "success");
       this.modalController.dismiss();
     }).catch((err) => {
-      this.loadingController.dismiss();
-      this.presentToast("Error guardando nota", "danger");
+      this.utilities.loadingController.dismiss();
+      this.utilities.presentToast(this.utilities.traducctionphrase("ERRORSN"), "danger");
       console.log(err);
     });
-  }
-
-  async presentLoading() {
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: '',
-      spinner: 'crescent'
-      //duration: 2000
-    });
-    await loading.present();
-  }
-
-  async presentToast(msg: string, col: string) {
-    const toast = await this.toastController.create({
-      message: msg,
-      color: col,
-      duration: 2000,
-      position: "top",
-    });
-    toast.present();
   }
 
 }

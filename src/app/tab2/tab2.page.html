@@ -1,23 +1,51 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Añadir Tarea
+      {{'ADD'|translate}}
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <form [formGroup]="tasks" (ngSubmit)="this.sendForm()">
-    <ion-item>
-      <ion-input type="text" formControlName="title" placeholder="Título"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-textarea formControlName="description" placeholder="Descripción" autocapitalize="true" auto-grow="true">
-      </ion-textarea>
-    </ion-item>
-    <div style="text-align: right;">
-      <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">Añadir
-      </ion-button>
-    </div>
-  </form>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        {{'NEWNOTE'|translate}}
+      </ion-card-title>
+    </ion-card-header>
+    <form [formGroup]="tasks" (ngSubmit)="this.sendForm()">
+      <ion-item>
+        <ion-input type="text" formControlName="title" placeholder="Título"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-textarea formControlName="description" placeholder="Descripción" autocapitalize="true" auto-grow="true">
+        </ion-textarea>
+      </ion-item>
+      <div style="text-align: center;">
+        <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!tasks.valid">{{'ADDNOTE'|translate}}
+        </ion-button>
+      </div>
+    </form>
+  
+  </ion-card>
+  
+  <br>
+  
+  <!-- Localizacion -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        {{'NEWLOCATION'|translate}}
+      </ion-card-title>
+    </ion-card-header>
+    <form [formGroup]="locations" (ngSubmit)="this.sendLocation()">
+      <ion-item>
+        <ion-input type="text" formControlName="titulo" placeholder="Título"></ion-input>
+      </ion-item>
+      <div style="text-align: center;">
+        <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!locations.valid">{{'ADDLOCATION'|translate}}</ion-button>
+      </div>
+    </form>
+  </ion-card>
+  
 </ion-content>

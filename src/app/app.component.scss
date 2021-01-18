@@ -1,0 +1,50 @@
+:root{
+    .dark{
+        --ion-color-primary: #8354f0;
+        --ion-color-primary-rgb: 235, 75, 88;
+        --ion-color-primary-contrast: #504f4f;
+        --ion-color-primary-contrast-rgb: 255, 255, 255;
+        --ion-color-primary-shade: #05064b;
+        --ion-color-primary-tint: #212270;
+        
+        ion-toggle{
+            --background-checked:#8d79bd;
+        }
+        ion-content{
+            --background: #292929;
+        }
+
+        ion-toolbar{
+            --background: rgb(0, 0, 0);
+            --color: #fff;
+        }
+        ion-list{
+            --ion-item-background:#292929;
+            --ion-item-color: #fff;
+
+            ion-list-header{
+                --color: #fff;
+            }
+        }
+
+        ion-card{
+            --color:#fff;
+            --background:#292929;
+            ion-card-title{
+                --color: #fff;
+                --background:#292929;
+            }
+        }
+
+        ion-item{
+            --background:#292929;
+            --color:#fff;
+        }
+
+        ion-tab-bar{
+            --background: #000000;
+            --color: #fff;
+        }
+    
+    }
+}

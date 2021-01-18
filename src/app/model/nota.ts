@@ -4,6 +4,5 @@ export interface Nota{
     texto:string,
     email?:any;
     fecha?:any,
-    coordenadas?:any,
     imagen?:any
 }

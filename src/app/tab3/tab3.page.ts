@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
+import { UtilitiesService } from '../services/utilities.service';
 
 @Component({
   selector: 'app-tab3',
@@ -14,7 +16,7 @@ export class Tab3Page implements OnInit{
 
   public user=null;
 
-  constructor(private google:GooglePlus, private authS:AuthService, private router:Router,private storage:NativeStorage, public alertController: AlertController) {}
+  constructor(private translate:TranslateService,private utilities:UtilitiesService,private google:GooglePlus, private authS:AuthService, private router:Router,private storage:NativeStorage, public alertController: AlertController) {}
 
   ngOnInit(){
     this.user={
@@ -22,7 +24,6 @@ export class Tab3Page implements OnInit{
       name: this.authS.user.name,
       avatar: this.authS.user.avatar
     };
-    console.log("AAAAAAAAAAAA"+this.user);
   }
 
   ionViewDidEnter(){
@@ -33,11 +34,19 @@ export class Tab3Page implements OnInit{
     };
   }
 
+  public changemode(){
+    this.utilities.change();
+  }
+
+  public changeLanguage(){
+    this.utilities.changelang();
+  }
+
   async presentAlertOut(){
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      header: 'Cerrar Sesión',
-      message: '¿Seguro que desea cerrar sesión?',
+      header: this.utilities.traducctionphrase('LOGOUT'),
+      message: this.utilities.traducctionphrase('WANTLOGOUT'),
       buttons:[
         {
           text: 'No',
@@ -47,7 +56,7 @@ export class Tab3Page implements OnInit{
             console.log('Confirm Cancel: blah');
           }
         }, {
-          text: 'Salir',
+          text: this.utilities.traducctionphrase('CLOSE'),
           handler: () => {
             console.log('Confirm Okay');
             this.logout();

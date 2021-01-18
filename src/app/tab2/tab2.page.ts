@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ToastController } from '@ionic/angular';
 import { Nota } from '../model/nota';
+import { location } from '../model/location' ;
 import { AuthService } from '../services/auth.service';
 import { NotasService } from '../services/notas.service';
 import { Vibration } from '@ionic-native/vibration/ngx';
+import { Geolocation, GeolocationOptions, Geoposition } from '@ionic-native/geolocation/ngx';
+import { LocationService } from '../services/location.service';
+import * as moment from 'moment';
+import { UtilitiesService } from '../services/utilities.service';
+import { AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-tab2',
@@ -13,15 +19,79 @@ import { Vibration } from '@ionic-native/vibration/ngx';
 })
 export class Tab2Page {
   public tasks:FormGroup;
+  public locations:FormGroup;
+  private options: GeolocationOptions;
+  private currentpos: Geoposition;
+  private latitude: number;
+  private longitude: number;
 
-  constructor(private authS:AuthService, private vibration:Vibration,private formBuilder:FormBuilder, private notasS:NotasService, public loadingController:LoadingController, public toastController: ToastController) {
+  constructor(private alertController:AlertController,private utilities:UtilitiesService,private geolocation:Geolocation, private authS:AuthService, private vibration:Vibration,private formBuilder:FormBuilder, private locationSer:LocationService,private notasS:NotasService) {
     this.tasks=this.formBuilder.group({
       title:['',Validators.required],
       description:['']
     });
+    this.locations=this.formBuilder.group({
+      //localizacion y fecha
+      position:[this.geolocation.getCurrentPosition(this.options).then((pos:Geoposition)=>{
+        this.latitude = pos.coords.latitude;
+        this.longitude = pos.coords.longitude;
+      })],
+      date:[''],
+      titulo:['',Validators.required],
+    });
   }
+
+  
+  public async sendLocation(){
+    try{
+      await this.utilities.presentLoading();
+
+      let data:location={
+        position:{latitude:this.latitude,longitude:this.longitude},
+        date:moment().format("DD-MM-YYYY  HH:mm:ss"),
+        email:this.authS.user.email,
+        titulo:this.locations.get('titulo').value
+      }
+  
+      this.locationSer.addLocation(data).then((respuesta)=>{
+        this.locations.setValue({
+          position:{
+            latitude:'',
+            longitude:''
+          },
+          date:'',
+          titulo:'',
+        })
+        this.utilities.loadingController.dismiss();
+        this.utilities.presentToast(this.utilities.traducctionphrase('SAVELOC'),"success");
+      }).catch((err)=>{
+        this.utilities.loadingController.dismiss();
+        this.utilities.presentToast(this.utilities.traducctionphrase('ERRORSLOC'),"danger");
+        console.log(err);
+      })
+    }catch(err){
+      console.log(err);
+      //Si no está conectado la ubicacion
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: "GPS",
+        message: this.utilities.traducctionphrase('ERRORGPS'),
+        buttons:[
+          {
+            text: "OK",
+            handler: () => {
+              console.log('Confirm Okay');
+            }
+          }
+        ]
+      });
+      await alert.present()
+    }
+    
+  }
+
   public async sendForm(){
-    await this.presentLoading();
+    await this.utilities.presentLoading();
     let data:Nota={
       titulo:this.tasks.get('title').value,
       texto:this.tasks.get('description').value,
@@ -32,33 +102,12 @@ export class Tab2Page {
         title:'',
         description:'',
       })
-      this.loadingController.dismiss();
-      this.presentToast("Nota guardada","success");
+      this.utilities.loadingController.dismiss();
+      this.utilities.presentToast(this.utilities.traducctionphrase('SAVENOTE'),"success");
     }).catch((err)=>{
-      this.loadingController.dismiss();
-      this.presentToast("Error guardando nota","danger");
+      this.utilities.loadingController.dismiss();
+      this.utilities.presentToast(this.utilities.traducctionphrase('ERRORSN'),"danger");
       console.log(err);
     });
   }
-
-  async presentLoading() {
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: '',
-      spinner:'crescent'
-      //duration: 2000
-    });
-    this.vibration.vibrate(1000);
-  }
-
-  async presentToast(msg:string,col:string) {
-    const toast = await this.toastController.create({
-      message: msg,
-      color: col,
-      duration: 2000,
-      position:"top",
-    });
-    toast.present();
-  }
-
 }

@@ -18,17 +18,33 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AuthService } from './services/auth.service';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Vibration } from '@ionic-native/vibration/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/languages/', '.json');
+}
 
 @NgModule({
   declarations: [AppComponent, EditNotaPage],
   entryComponents: [EditNotaPage],
   imports: [
     BrowserModule, 
+    HttpClientModule,
     ReactiveFormsModule,
     IonicModule.forRoot(), 
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     StatusBar,
@@ -38,6 +54,7 @@ import { Vibration } from '@ionic-native/vibration/ngx';
     AuthService,
     NativeStorage,
     Vibration,
+    Geolocation,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Vibration } from '@ionic-native/vibration/ngx';
 import { Platform } from '@ionic/angular';
+import { UtilitiesService } from '../services/utilities.service';
 
 @Component({
   selector: 'app-tab1',
@@ -19,7 +20,7 @@ export class Tab1Page{
 
   public listaNotas = [];
 
-  constructor(private vibration:Vibration, private plat:Platform,private notasS: NotasService, private modalController:ModalController, private nativeStorage:NativeStorage, private authS:AuthService, private router:Router, public alertController: AlertController) { }
+  constructor(private utilities:UtilitiesService,private vibration:Vibration, private plat:Platform,private notasS: NotasService, private modalController:ModalController, private nativeStorage:NativeStorage, private authS:AuthService, private router:Router, public alertController: AlertController) { }
 
   public async logout(){
     await this.authS.logout();
@@ -38,7 +39,7 @@ export class Tab1Page{
 
   ionViewDidEnter() {
     //Mostrar loading
-    //this.cargaDatos();
+    this.cargaDatos();
   }
 
   public cargaDatos($event=null){
@@ -68,7 +69,7 @@ export class Tab1Page{
             ...d.data()
           }
          this.listaNotas.push(nota);
-         console.log(nota)
+         //console.log(nota)
         })
         if($event){
           $event.target.complete();
@@ -83,8 +84,8 @@ export class Tab1Page{
     if(this.plat.is('cordova')){
       const alert = await this.alertController.create({
         cssClass: 'my-custom-class',
-        header: 'Borrar',
-        message: '¿Seguro que desea eliminar esta nota?',
+        header: this.utilities.traducctionphrase('DELETE'),
+        message: this.utilities.traducctionphrase('WANTDELN'),
         buttons:[
           {
             text: 'No',
@@ -94,7 +95,7 @@ export class Tab1Page{
               console.log('Confirm Cancel: blah');
             }
           }, {
-            text: 'Borrar',
+            text: this.utilities.traducctionphrase('DELETE'),
             handler: () => {
               console.log('Confirm Okay');
               this.borraNota(id);
@@ -106,8 +107,8 @@ export class Tab1Page{
     }else{
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      header: 'Borrar',
-      message: '¿Seguro que desea eliminar esta nota?',
+      header: this.utilities.traducctionphrase('DELETE'),
+      message: this.utilities.traducctionphrase('WANTDELN'),
       buttons:[
         {
           text: 'No',
@@ -117,7 +118,7 @@ export class Tab1Page{
             console.log('Confirm Cancel: blah');
           }
         }, {
-          text: 'Borrar',
+          text: this.utilities.traducctionphrase('DELETE'),
           handler: () => {
             console.log('Confirm Okay');
             this.borraNota(id);
